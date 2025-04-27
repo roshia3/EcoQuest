@@ -22,7 +22,7 @@ Answer a fun fact or critical question about the environment!
 ### Cross (✖): 
 Oh no! Step back four spaces!
 ### Empty Space ( ): 
-Roll again and keep moving!
+Go back one step, keep rolling!
 
 ### 🏆 First to reach the end wins — but the real reward is a deeper understanding of how to protect our beautiful planet.
 
@@ -42,6 +42,8 @@ Because Saving the World should start with a roll of the dice.**
 
 **🎨 Colorful, Kid-Friendly Design: Crafted to captivate young players.**
 
+**💰 Rewarding: You get points for each correct answer!**
+
 **🔁 Replayable Gameplay: Every round is a new adventure!**
 
 ## **How to Play ▶️**
@@ -50,10 +52,12 @@ Because Saving the World should start with a roll of the dice.**
 ### Move according to your roll:
 ### Question Mark: Answer a climate-related question.
 
-
-### Cross: Move back four spaces.
 ### Empty Space: Roll again!
 ### Race to the finish line while learning how to protect our planet.
+### Cross: Move back four spaces.
+=======
+### X: Goes back a number of spaces (randomly generated number between 1 and 3).
+
 
 
 
