@@ -20,7 +20,7 @@ Roll a four-sided dice and move along the board.
 ### Question Mark (?): 
 Answer a fun fact or critical question about the environment!
 ### Cross (✖): 
-Oh no! Step back four spaces!
+Oh no! Step back 1, 2, or 3 spaces (randomly generated)
 ### Empty Space ( ): 
 Roll again and keep moving!
 
