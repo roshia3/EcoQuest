@@ -1,4 +1,4 @@
-# EcoQuest 🌱: A Path to a Greener Future 🌎
+# EcoQuest 🌱: Path to a Green Future
 
 ### Problem & Opportunity
 🌎 **Problem:** Climate Change
@@ -20,7 +20,7 @@ Roll a four-sided dice and move along the board.
 ### Question Mark (?): 
 Answer a fun fact or critical question about the environment!
 ### Cross (✖): 
-Oh no! Step back 1, 2, or 3 spaces (randomly generated)
+Oh no! Step back four spaces!
 ### Empty Space ( ): 
 Roll again and keep moving!
 
@@ -51,7 +51,7 @@ Because Saving the World should start with a roll of the dice.**
 ### Question Mark: Answer a climate-related question.
 
 
-### Cross: Goes back a number of spaces (randomly generated number between 1 and 3).
+### Cross: Move back four spaces.
 ### Empty Space: Roll again!
 ### Race to the finish line while learning how to protect our planet.
 
