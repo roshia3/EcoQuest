@@ -62,7 +62,6 @@
     }
 
     .selected {
-      animation: none !important;
       transform: scale(1.1);
       box-shadow: 0 0 20px #B8E28B;
     }
@@ -106,64 +105,27 @@
     const characters = document.querySelectorAll('.character-option');
     const continueBtn = document.getElementById('continueBtn');
     let selectedCharacter = null;
-
+    
+    // When user clicks on a character
     characters.forEach(character => {
       character.addEventListener('click', () => {
         // Remove 'selected' from all characters
         characters.forEach(c => c.classList.remove('selected'));
         // Add 'selected' to the clicked one
         character.classList.add('selected');
-        // Store selected character
+        // Store selected character name
         selectedCharacter = character.getAttribute('data-character');
+        // Save immediately to localStorage
+        localStorage.setItem('selectedCharacter', selectedCharacter);
         // Enable the Continue button
         continueBtn.disabled = false;
       });
     });
-
+    
+    // When Continue button is clicked
     function launchBoard() {
-      // Redirect to game board
-      window.location.href = "game_board.html"; 
-	    const characters = document.querySelectorAll('.character-option');
-	    const continueBtn = document.getElementById('continueBtn');
-	    let selectedCharacter = null; // To keep track
-
-	    // Check if a character was previously selected
-	    const previouslySelected = localStorage.getItem('selectedCharacter');
-	    if (previouslySelected) {
-	      characters.forEach(character => {
-	        if (character.innerText === previouslySelected) {
-	          character.classList.add('selected');
-	          selectedCharacter = previouslySelected;
-	          continueBtn.disabled = false;
-	        }
-	      });
-	    }
-
-	    characters.forEach(character => {
-	      character.addEventListener('click', () => {
-	        // Remove 'selected' from all characters
-	        characters.forEach(c => c.classList.remove('selected'));
-	        // Add 'selected' to the clicked one
-	        character.classList.add('selected');
-	        // Store selected character text
-	        selectedCharacter = character.innerText;
-	        // Save to localStorage immediately
-	        localStorage.setItem('selectedCharacter', selectedCharacter);
-	        // Enable the Continue button
-	        continueBtn.disabled = false;
-	      });
-	    });
-
-	    function launchBoard() {
-	      if (selectedCharacter) {
-	        // Make sure selected character is saved (already handled above too)
-	        localStorage.setItem('selectedCharacter', selectedCharacter);
-	      }
-	      // Redirect to game board
-	      window.location.href = "game_board.html"; 
-	    }
-
+      window.location.href = "game_board.html";
     }
-  </script>
+    </script>    
 </body>
 </html>
