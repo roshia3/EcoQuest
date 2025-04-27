@@ -1,0 +1,49 @@
+@import url('https://fonts.googleapis.com/css2?family=Akaya+Kanadaka&display=swap');
+
+body {
+  background-color: #52663D;
+  color: #fff;
+  font-family: 'Akaya Kanadaka', cursive;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  margin: 0;
+}
+
+h1 {
+  font-size: 3em;
+  margin-bottom: 20px;
+}
+.instructions {
+  max-width: 600px;
+  background-color: rgba(255, 255, 255, 0.1);
+  padding: 20px;
+  margin: 0 auto 30px auto;
+  border-radius: 15px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  font-size: 1.1em;
+  line-height: 1.5;
+  font-family: 'Bona Nova', serif; /* Applying Bona Nova font */
+}
+.instructions p {
+  font-weight: bold;
+}
+button {
+  padding: 15px 40px;
+  font-size: 1.4em;
+  font-family: 'Berkshire Swash', cursive;
+  background: linear-gradient(145deg, #a8d5a2, #7ea870);
+  color: #fff;
+  border: none;
+  border-radius: 50px;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+  transition: all 0.3s ease-in-out;
+  cursor: pointer;
+}
+button:hover {
+  background: linear-gradient(145deg, #7ea870, #a8d5a2);
+  transform: scale(1.05);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+}
