@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Board</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #52663D;
+            position: relative;
+        }
+
+        .container {
+            position: relative;
+            text-align: center;
+        }
+
+        .board-image {
+            width: 1250px;
+            height: auto;
+        }
+
+        .dice {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: auto;
+            cursor: pointer;
+        }
+
+        .character {
+            position: absolute;
+            width: 40px; /* Smaller character size */
+            height: auto;
+            z-index: 10;
+            transition: all 0.3s ease; /* Smooth movement */
+            transform: translateY(0);
+        }
+
+        /* Pop animation */
+        @keyframes pop {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .pop-animation {
+            animation: pop 0.3s ease;
+        }
+
+        #questionDialog {
+            display: none;
+            position: fixed;
+            top: 20%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(#e8f5e9, #c8e6c9);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+            width: 420px;
+            text-align: center;
+            z-index: 20;
+            border: 3px solid #4CAF50;
+            font-family: 'Garamond', serif;
+        }
+
+        /* Rest of your existing styles... */
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Image of the board -->
+        <img src="Path_ver2.png" alt="Game Board" class="board-image">
+        <!-- Image of the dice in the corner -->
+        <img src="dice_1.png" alt="Dice" class="dice" id="dice" onclick="rollDice()">
+        <!-- Characters (initially hidden) -->
+        <img src="Character_girl_transparent.png" alt="Girl Character" class="character" id="hero1" style="display:none;">
+        <img src="Character_boy_transparent.png" alt="Boy Character" class="character" id="hero2" style="display:none;">
+    </div>
+
+    <!-- Question Dialog (keep your existing dialog HTML) -->
+    
+    <script>
+        const dice = document.getElementById("dice");
+        const questionDialog = document.getElementById("questionDialog");
+        const questionText = document.getElementById("questionText");
+        const choicesDiv = document.getElementById("choices");
+        const resultMessage = document.getElementById("resultMessage");
+        const hero1 = document.getElementById("hero1");
+        const hero2 = document.getElementById("hero2");
+        
+        // Get the selected character
+        const selectedCharacter = localStorage.getItem('selectedCharacter');
+        let currentHero;
+        
+        // Set up the selected character
+        function setupCharacter() {
+            // Hide both characters first
+            hero1.style.display = "none";
+            hero2.style.display = "none";
+            
+            if (selectedCharacter === "Character 1") {
+                currentHero = hero1;
+            } else if (selectedCharacter === "Character 2") {
+                currentHero = hero2;
+            } else {
+                // Default to girl character if none selected
+                currentHero = hero1;
+            }
+            
+            // Show the selected character
+            currentHero.style.display = "block";
+            
+            // Set initial position
+            const pos = path[currentPos];
+            currentHero.style.left = pos.x + "px";
+            currentHero.style.top = pos.y + "px";
+        }
+
+        // Coordinates of each box on the board
+        const path = [
+          { x: 0, y: 0}, // Starting position (off-board)
+          { x: 90, y: 700 },   // Position 1
+          { x: 275, y: 670 },  // Position 2
+          { x: 470, y: 690 },  // Position 3
+          { x: 650, y: 690 },  // Position 4
+          { x: 850, y: 710 },  // Position 5
+          { x: 1030, y: 600 }, // Position 6
+          { x: 980, y: 410 },  // Position 7
+          { x: 830, y: 380 },  // Position 8
+          { x: 450, y: 700 },  // Position 9
+          { x: 450, y: 700 }   // Position 10
+        ];
+      
+        let currentPos = 0;
+        let isMoving = false;
+      
+        function rollDice() {
+            if (isMoving) return; // Prevent rolling while moving
+            
+            const roll = Math.floor(Math.random() * 4) + 1;
+      
+            // Update dice image based on roll
+            dice.src = `dice_${roll}.png`;
+        
+            // Move the character
+            moveCharacter(roll);
+        }
+        
+        function moveCharacter(steps) {
+            isMoving = true;
+            let stepsRemaining = steps;
+            const moveInterval = setInterval(() => {
+                if (stepsRemaining <= 0) {
+                    clearInterval(moveInterval);
+                    isMoving = false;
+                    // After moving, check if landed on question block
+                    checkForQuestion();
+                    return;
+                }
+                
+                currentPos++;
+                if (currentPos >= path.length) {
+                    currentPos = path.length - 1;
+                    clearInterval(moveInterval);
+                    isMoving = false;
+                    return;
+                }
+                
+                const pos = path[currentPos];
+                currentHero.style.left = pos.x + "px";
+                currentHero.style.top = pos.y + "px";
+                
+                // Add pop animation
+                currentHero.classList.add("pop-animation");
+                setTimeout(() => {
+                    currentHero.classList.remove("pop-animation");
+                }, 300);
+                
+                stepsRemaining--;
+            }, 300); // Move every 300ms
+        }
+    
+        function checkForQuestion() {
+            if (currentPos >= 1 && currentPos <= 10) {
+                showQuestion(currentPos);
+            }
+        }
+        
+        // Initialize the game
+        window.onload = function() {
+            setupCharacter();
+        };
+    
+        function showQuestion(position) {
+            // Clear previous question and choices
+            questionText.innerHTML = '';
+            choicesDiv.innerHTML = '';
+            resultMessage.style.display = "none";
+            
+            // Create question and choices based on position
+            switch(position) {
+                case 1:
+                    questionText.innerHTML = "Which action would reduce your carbon footprint the most?";
+                    addChoice("A) Recycling everything you can", "A");
+                    addChoice("B) Buying only secondhand clothes", "B");
+                    addChoice("C) Eating a plant-based diet", "C");
+                    addChoice("D) Switching to LED light bulbs", "D");
+                    break;
+                case 2:
+                    questionText.innerHTML = "In her environmental science class, Maya learns that fast fashion creates tons of waste and pollution. What is one smart way to reduce your impact when it comes to clothing?";
+                    addChoice("A) Buy more clothes during sales", "A");
+                    addChoice("B) Wash clothes in hot water every time", "B");
+                    addChoice("C) Reuse, repair, or thrift clothing before buying new", "C");
+                    addChoice("D) Avoid wearing the same outfit twice", "D");
+                    break;
+                case 3:
+                    questionText.innerHTML = "Which of the following is considered the most sustainable protein source?";
+                    addChoice("A) Beef", "A");
+                    addChoice("B) Pork", "B");
+                    addChoice("C) Crickets", "C");
+                    addChoice("D) Chicken", "D");
+                    break;
+                case 4:
+                    questionText.innerHTML = "Alex notices that his family's electricity bill is unusually high during the summer. After researching, he finds out their air conditioner runs almost all day and their windows are usually open. What is the most effective way to lower both energy use and cost?";
+                    addChoice("A) Turn the A/C to maximum to cool the house faster", "A");
+                    addChoice("B) Keep windows open for fresh air all day", "B");
+                    addChoice("C) Close windows and curtains, and use a programmable thermostat", "C");
+                    addChoice("D) Buy more fans for every room", "D");
+                    break;
+                case 5:
+                    questionText.innerHTML = "Which organization created the concept of 'carbon footprint' as part of a marketing campaign?";
+                    addChoice("A) Greenpeace", "A");
+                    addChoice("B) BP (British Petroleum)", "B");
+                    addChoice("C) United Nations", "C");
+                    addChoice("D) World Wildlife Fund (WWF)", "D");
+                    break;
+                case 6:
+                    questionText.innerHTML = "Which is the leading cause of tropical deforestation?";
+                    addChoice("A) Illegal logging", "A");
+                    addChoice("B) Cattle ranching", "B");
+                    addChoice("C) Urban expansion", "C");
+                    addChoice("D) Mining operations", "D");
+                    break;
+                case 7:
+                    questionText.innerHTML = "Meera conducts a school project comparing households that use natural gas for heating to those using electric heat pumps powered by renewable energy. She finds that while the upfront cost of electric systems is higher, the long-term emissions are significantly lower. What's the most accurate environmental takeaway from her findings?";
+                    addChoice("A) Natural gas is better because it's cheaper now", "A");
+                    addChoice("B) Electric heat pumps only work in cold climates", "B");
+                    addChoice("C) Short-term costs shouldn't outweigh long-term environmental impact", "C");
+                    addChoice("D) Renewable energy is always free and available", "D");
+                    break;
+                case 8:
+                    questionText.innerHTML = "What is 'greenwashing'?";
+                    addChoice("A) Growing plants on rooftops", "A");
+                    addChoice("B) Misleading consumers to think a product is environmentally friendly", "B");
+                    addChoice("C) Cleaning polluted rivers and lakes", "C");
+                    addChoice("D) Using green-colored packaging", "D");
+                    break;
+                case 9:
+                    questionText.innerHTML = "Which of the following types of plastic can be most commonly recycled curbside in the U.S.?";
+                    addChoice("A) #1 PET (Polyethylene Terephthalate)", "A");
+                    addChoice("B) #3 PVC (Polyvinyl Chloride)", "B");
+                    addChoice("C) #6 PS (Polystyrene)", "C");
+                    addChoice("D) #7 Other", "D");
+                    break;
+                case 10:
+                    questionText.innerHTML = "What is the estimated time it takes for fishing lines made from nylon to degrade in the ocean?";
+                    addChoice("A) 10 years", "A");
+                    addChoice("B) 40 years", "B");
+                    addChoice("C) 600 years", "C");
+                    addChoice("D) 1,000 years", "D");
+                    break;
+                default:
+                    // Default question if position doesn't match any case
+                    questionText.innerHTML = "Which of these is the most sustainable practice?";
+                    addChoice("A) Using disposable plastic bottles", "A");
+                    addChoice("B) Buying new clothes every season", "B");
+                    addChoice("C) Using a reusable water bottle", "C");
+                    addChoice("D) Driving short distances alone", "D");
+            }
+            
+            questionDialog.style.display = "block";
+            choicesDiv.style.display = "block";
+        }
+    
+        function addChoice(text, value) {
+            const button = document.createElement("button");
+            button.innerHTML = text;
+            button.onclick = function() { submitAnswer(value); };
+            choicesDiv.appendChild(button);
+            choicesDiv.appendChild(document.createElement("br"));
+            choicesDiv.appendChild(document.createElement("br"));
+        }
+    
+        function submitAnswer(choice) {
+            choicesDiv.style.display = "none"; 
+            resultMessage.style.display = "block";
+            
+            let correctAnswer = "";
+            let isCorrect = false;
+            
+            // Determine correct answer based on current position
+            switch(currentPos) {
+                case 1:
+                    correctAnswer = "C";
+                    isCorrect = (choice === "C");
+                    break;
+                case 2:
+                case 4:
+                case 7:
+                    correctAnswer = "C";
+                    isCorrect = (choice === "C");
+                    break;
+                case 3:
+                    correctAnswer = "C";
+                    isCorrect = (choice === "C");
+                    break;
+                case 5:
+                case 8:
+                    correctAnswer = "B";
+                    isCorrect = (choice === "B");
+                    break;
+                case 6:
+                    correctAnswer = "B";
+                    isCorrect = (choice === "B");
+                    break;
+                case 9:
+                    correctAnswer = "A";
+                    isCorrect = (choice === "A");
+                    break;
+                case 10:
+                    correctAnswer = "C";
+                    isCorrect = (choice === "C");
+                    break;
+                default:
+                    correctAnswer = "C";
+                    isCorrect = (choice === "C");
+            }
+            
+            if (isCorrect) {
+                resultMessage.innerText = "✅ Correct! " + getExplanation(currentPos);
+                resultMessage.style.color = "green";
+            } else {
+                resultMessage.innerText = `❌ Incorrect. Correct answer: ${correctAnswer}. ` + getExplanation(currentPos);
+                resultMessage.style.color = "red";
+            }
+        }
+    
+        function getExplanation(position) {
+            switch(position) {
+                case 1:
+                    return "Eating a plant-based diet cuts emissions much more significantly by reducing the demand for carbon-intensive livestock farming.";
+                case 2:
+                    return "Reusing, repairing, or thrifting clothing reduces waste and pollution from the fashion industry.";
+                case 3:
+                    return "Insects like crickets use very little land, water, and feed to produce high amounts of protein.";
+                case 4:
+                    return "Closing windows and using a programmable thermostat reduces energy waste from air conditioning.";
+                case 5:
+                    return "BP popularized the idea of personal carbon footprints to shift focus onto individual responsibility.";
+                case 6:
+                    return "Most tropical deforestation is driven by clearing land for cattle grazing.";
+                case 7:
+                    return "While electric systems have higher upfront costs, their long-term environmental benefits are significant.";
+                case 8:
+                    return "Greenwashing happens when companies falsely advertise products as environmentally friendly.";
+                case 9:
+                    return "#1 PET plastics are widely accepted in curbside recycling programs for making new products.";
+                case 10:
+                    return "Nylon fishing lines can take up to 600 years to decompose in ocean conditions.";
+                default:
+                    return "Sustainable practices reduce environmental impact in the long term.";
+            }
+        }
+    
+        function closeQuestionDialog() {
+            questionDialog.style.display = "none";
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Character Selection</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Akaya+Kanadaka&display=swap');
+
+    body {
+      background-color: #52663D;
+      color: #fff;
+      font-family: 'Akaya Kanadaka', cursive;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    h1 {
+      font-size: 32px;
+      margin-bottom: 40px;
+      color: #B8E28B;
+      text-shadow: 2px 2px #000;
+    }
+
+    .characters {
+      display: flex;
+      gap: 80px;
+      margin-bottom: 50px;
+    }
+
+    .character-option {
+      width: 150px;
+      height: 200px;
+      background-color: #2e5939;
+      border: 4px solid #B8E28B;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform 0.2s;
+      font-family: 'Akaya Kanadaka', cursive;
+      font-size: 20px;
+      background-image: url('https://www.transparenttextures.com/patterns/floral.png');
+      background-repeat: repeat;
+      background-size: cover;
+      box-shadow: 0 0 10px #B8E28B;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .character-option img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .character-option:hover {
+      transform: scale(1.1);
+    }
+
+    .selected {
+      animation: none !important;
+      transform: scale(1.1);
+      box-shadow: 0 0 20px #B8E28B;
+    }
+
+    button {
+      font-family: 'Akaya Kanadaka', cursive;
+      padding: 10px 20px;
+      background-color: #B8E28B;
+      color: #000;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      font-size: 20px;
+    }
+
+    button:hover:enabled {
+      background-color: #a6cc79;
+    }
+
+    button:disabled {
+      background-color: #cccccc;
+      cursor: not-allowed;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <h1>Character Selection</h1>
+  <div class="characters">
+    <div class="character-option" data-character="Girl">
+      <img src="Character_girl.png" alt="Girl Character">
+    </div>
+    <div class="character-option" data-character="Boy">
+      <img src="Character_boy.png" alt="Boy Character">
+    </div>
+  </div>
+
+  <button id="continueBtn" onclick="launchBoard()" disabled>Continue</button>
+
+  <script>
+    const characters = document.querySelectorAll('.character-option');
+    const continueBtn = document.getElementById('continueBtn');
+    let selectedCharacter = null;
+
+    characters.forEach(character => {
+      character.addEventListener('click', () => {
+        // Remove 'selected' from all characters
+        characters.forEach(c => c.classList.remove('selected'));
+        // Add 'selected' to the clicked one
+        character.classList.add('selected');
+        // Store selected character
+        selectedCharacter = character.getAttribute('data-character');
+        // Enable the Continue button
+        continueBtn.disabled = false;
+      });
+    });
+
+    function launchBoard() {
+      // Redirect to game board
+      window.location.href = "game_board.html"; 
+	    const characters = document.querySelectorAll('.character-option');
+	    const continueBtn = document.getElementById('continueBtn');
+	    let selectedCharacter = null; // To keep track
+
+	    // Check if a character was previously selected
+	    const previouslySelected = localStorage.getItem('selectedCharacter');
+	    if (previouslySelected) {
+	      characters.forEach(character => {
+	        if (character.innerText === previouslySelected) {
+	          character.classList.add('selected');
+	          selectedCharacter = previouslySelected;
+	          continueBtn.disabled = false;
+	        }
+	      });
+	    }
+
+	    characters.forEach(character => {
+	      character.addEventListener('click', () => {
+	        // Remove 'selected' from all characters
+	        characters.forEach(c => c.classList.remove('selected'));
+	        // Add 'selected' to the clicked one
+	        character.classList.add('selected');
+	        // Store selected character text
+	        selectedCharacter = character.innerText;
+	        // Save to localStorage immediately
+	        localStorage.setItem('selectedCharacter', selectedCharacter);
+	        // Enable the Continue button
+	        continueBtn.disabled = false;
+	      });
+	    });
+
+	    function launchBoard() {
+	      if (selectedCharacter) {
+	        // Make sure selected character is saved (already handled above too)
+	        localStorage.setItem('selectedCharacter', selectedCharacter);
+	      }
+	      // Redirect to game board
+	      window.location.href = "game_board.html"; 
+	    }
+
+    }
+  </script>
+</body>
+</html>
