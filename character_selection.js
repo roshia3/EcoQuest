@@ -2,6 +2,7 @@ const characters = document.querySelectorAll('.character-option');
 const continueBtn = document.getElementById('continueBtn');
 let selectedCharacter = null;
 
+
 // When user clicks on a character
 characters.forEach(character => {
   character.addEventListener('click', () => {
