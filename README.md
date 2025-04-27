@@ -51,7 +51,7 @@ Because Saving the World should start with a roll of the dice.**
 ### Question Mark: Answer a climate-related question.
 
 
-### Cross: Move back four spaces.
+### Cross: Goes back a number of spaces (randomly generated number between 1 and 3).
 ### Empty Space: Roll again!
 ### Race to the finish line while learning how to protect our planet.
 
