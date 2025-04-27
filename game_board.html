@@ -72,7 +72,41 @@
             font-family: 'Garamond', serif;
         }
 
-        /* Rest of your existing styles... */
+        #questionDialog h3 {
+        font-size: 26px;
+        color: #2e7d32; /* Dark leafy green */
+        margin-bottom: 15px;
+        }
+
+        #questionText {
+        font-size: 18px;
+        color: #33691e;
+        margin-bottom: 20px;
+        }
+
+        #choices button {
+        background-color: #81c784;
+        color: #1b5e20;
+        border: none;
+        padding: 10px 20px;
+        margin: 8px 0;
+        border-radius: 8px;
+        font-size: 16px;
+        cursor: pointer;
+        width: 100%;
+        transition: background-color 0.3s ease;
+        }
+
+        #choices button:hover {
+        background-color: #66bb6a;
+        }
+
+        #resultMessage {
+        display: none;
+        font-size: 22px;
+        margin-top: 20px;
+        font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -81,13 +115,33 @@
         <img src="Path_ver2.png" alt="Game Board" class="board-image">
         <!-- Image of the dice in the corner -->
         <img src="dice_1.png" alt="Dice" class="dice" id="dice" onclick="rollDice()">
-        <!-- Characters (initially hidden) -->
-        <img src="Character_girl_transparent.png" alt="Girl Character" class="character" id="hero1" style="display:none;">
-        <img src="Character_boy_transparent.png" alt="Boy Character" class="character" id="hero2" style="display:none;">
+        <!-- Female character -->
+        <img src="Character_girl_transparent.png" alt="girlCharacter" class="superhero" id="hero1">
+        <!-- Male character -->
+        <img src="Character_boy_transparent.png" alt="boyCharacter" class="boyCharacter" class="boyCharacter" id="hero2">
     </div>
 
-    <!-- Question Dialog (keep your existing dialog HTML) -->
-    
+    <!-- Question Dialog -->
+    <div id="questionDialog" style="display: none; position: fixed; top: 20%; left: 50%; transform: translateX(-50%);
+    background: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px #333; width: 400px; text-align: center; z-index: 20;">
+        <!-- ❌ Close Button -->
+        <button id="closeDialog" onclick="closeQuestionDialog()" 
+        style="position: absolute; top: 10px; right: 15px; background: none; border: none; font-size: 20px; cursor: pointer;">✖️</button>
+        
+        <h3>Question Time!</h3>
+        <p id="questionText">
+            In her environmental science class, Maya learns that fast fashion creates tons of waste and pollution. 
+            What is one smart way to reduce your impact when it comes to clothing?
+        </p>
+        <div id="choices">
+            <button onclick="submitAnswer('A')">A) Buy more clothes during sales</button><br><br>
+            <button onclick="submitAnswer('B')">B) Wash clothes in hot water every time</button><br><br>
+            <button onclick="submitAnswer('C')">C) Reuse, repair, or thrift clothing before buying new</button><br><br>
+            <button onclick="submitAnswer('D')">D) Avoid wearing the same outfit twice</button>
+        </div>
+        <div id="resultMessage" style="display: none; font-size: 20px; margin-top: 20px; font-weight: bold;"></div>
+    </div>
+
     <script>
         const dice = document.getElementById("dice");
         const questionDialog = document.getElementById("questionDialog");
@@ -176,8 +230,13 @@
                 }
                 
                 const pos = path[currentPos];
-                currentHero.style.left = pos.x + "px";
-                currentHero.style.top = pos.y + "px";
+                if (hero1.style.display === "block") {
+                    hero1.style.left = pos.x + "px";
+                    hero1.style.top = pos.y + "px";
+                } else if (hero2.style.display === "block") {
+                    hero2.style.left = pos.x + "px";
+                    hero2.style.top = pos.y + "px";
+                }
                 
                 // Add pop animation
                 currentHero.classList.add("pop-animation");
@@ -187,6 +246,7 @@
                 
                 stepsRemaining--;
             }, 300); // Move every 300ms
+            
         }
     
         function checkForQuestion() {
