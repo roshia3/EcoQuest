@@ -28,16 +28,16 @@
 
         .dice {
             position: absolute;
-            top: 20px;
-            right: 20px;
-            width: 50px;
+            bottom: 10px;
+            right: 10px;
+            width: 250px;
             height: auto;
             cursor: pointer;
         }
 
         .character {
             position: absolute;
-            width: 40px; /* Smaller character size */
+            width: 150px; /* Smaller character size */
             height: auto;
             z-index: 10;
             transition: all 0.3s ease; /* Smooth movement */
@@ -55,9 +55,24 @@
             animation: pop 0.3s ease;
         }
 
-        #questionDialog {
+        #pointsCounter {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: linear-gradient(#e8f5e9, #c8e6c9);
+            padding: 15px 25px;
+            border-radius: 12px;
+            font-size: 24px;
+            color: #2e7d32;
+            font-family: 'Garamond', serif;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            border: 3px solid #4CAF50;
+            z-index: 20;
+        }
+
+        #questionDialog { 
             display: none;
-            position: fixed;
+            position: fixed; /* keep this */
             top: 20%;
             left: 50%;
             transform: translateX(-50%);
@@ -70,13 +85,75 @@
             z-index: 20;
             border: 3px solid #4CAF50;
             font-family: 'Garamond', serif;
+            overflow: hidden;
         }
 
-        /* Rest of your existing styles... */
+        #questionDialog h3 {
+            font-size: 26px;
+            color: #2e7d32; /* Dark leafy green */
+            margin-bottom: 15px;
+        }
+
+        #closeDialog {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            font-size: 28px;
+            color: #2e7d32;
+            cursor: pointer;
+            z-index: 30;
+        }
+
+        #closeDialog:hover {
+            color: #1b5e20;
+        }
+
+        #questionText {
+            font-size: 18px;
+            color: #33691e;
+            margin-bottom: 20px;
+        }
+
+        #choices button {
+            background-color: #81c784;
+            color: #1b5e20;
+            border: none;
+            padding: 10px 20px;
+            margin: 8px 0;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.3s ease;
+        }
+
+        #choices button:hover {
+            background-color: #66bb6a;
+        }
+
+        #resultMessage {
+            display: none;
+            font-size: 22px;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+
+        @keyframes popPoints {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.3); }
+            100% { transform: scale(1); }
+        }
+
+        .pop-animation-points {
+            animation: popPoints 0.4s ease;
+        }
     </style>
 </head>
 <body>
     <div class="container">
+        <div id="pointsCounter">Points: 0</div>
         <!-- Image of the board -->
         <img src="Path_ver2.png" alt="Game Board" class="board-image">
         <!-- Image of the dice in the corner -->
@@ -86,9 +163,17 @@
         <img src="Character_boy_transparent.png" alt="Boy Character" class="character" id="hero2" style="display:none;">
     </div>
 
-    <!-- Question Dialog (keep your existing dialog HTML) -->
+    <!-- Question Dialog -->
+    <div id="questionDialog">
+        <button id="closeDialog" onclick="closeQuestionDialog()">✖</button>
+        <h3 id="questionHeader">Question Time!</h3>
+        <p id="questionText">Question will go here!</p>
+        <div id="choices"></div>
+        <div id="resultMessage"></div>
+    </div>    
     
     <script>
+        let points = 0;
         const dice = document.getElementById("dice");
         const questionDialog = document.getElementById("questionDialog");
         const questionText = document.getElementById("questionText");
@@ -96,30 +181,26 @@
         const resultMessage = document.getElementById("resultMessage");
         const hero1 = document.getElementById("hero1");
         const hero2 = document.getElementById("hero2");
-        
-        // Get the selected character
+               
+        // Get selected character from local storage
         const selectedCharacter = localStorage.getItem('selectedCharacter');
         let currentHero;
-        
+
         // Set up the selected character
         function setupCharacter() {
-            // Hide both characters first
             hero1.style.display = "none";
             hero2.style.display = "none";
-            
-            if (selectedCharacter === "Character 1") {
+
+            if (selectedCharacter === "Girl") {
                 currentHero = hero1;
-            } else if (selectedCharacter === "Character 2") {
+            } else if (selectedCharacter === "Boy") {
                 currentHero = hero2;
-            } else {
-                // Default to girl character if none selected
-                currentHero = hero1;
-            }
-            
-            // Show the selected character
+            } //else {
+            // currentHero = hero1; // fallback
+            //}
+
             currentHero.style.display = "block";
-            
-            // Set initial position
+
             const pos = path[currentPos];
             currentHero.style.left = pos.x + "px";
             currentHero.style.top = pos.y + "px";
@@ -127,17 +208,33 @@
 
         // Coordinates of each box on the board
         const path = [
-          { x: 0, y: 0}, // Starting position (off-board)
-          { x: 90, y: 700 },   // Position 1
-          { x: 275, y: 670 },  // Position 2
-          { x: 470, y: 690 },  // Position 3
-          { x: 650, y: 690 },  // Position 4
-          { x: 850, y: 710 },  // Position 5
-          { x: 1030, y: 600 }, // Position 6
-          { x: 980, y: 410 },  // Position 7
-          { x: 830, y: 380 },  // Position 8
-          { x: 450, y: 700 },  // Position 9
-          { x: 450, y: 700 }   // Position 10
+            { x: 365, y: 590 }, // starting
+            { x: 198, y: 627 }, // 1st space
+            { x: 90, y: 540 }, // 2nd space
+            { x: 140, y: 444 }, // 3rd space
+            { x: 260, y: 410 }, // 4th space
+            { x: 390, y: 420 }, // 5th space
+            { x: 557, y: 430 }, // 6th space
+            { x: 713, y: 430 }, // 7th space
+            { x: 861, y: 415 }, // 8th space
+            { x: 975, y: 345 }, // 9th space
+            { x: 945, y: 218 }, // 10th space
+            { x: 793, y: 200 }, // 11th space
+            { x: 651, y: 207 }, // 12th space
+            { x: 550, y: 230 }, // 13th space
+            { x: 448, y: 245 }, // 14th space
+            { x: 320, y: 260}, // 15th space
+            { x: 190, y: 255}, // 16th space
+            { x: 85, y: 210}, // 17th space
+            { x: 65, y: 95}, // 18th space
+            { x: 160, y: 20}, // 19th space
+            { x: 290, y: -10}, // 20th space
+            {x: 415, y: -10}, // 21st space
+            {x: 530, y: -3}, // 22nd space
+            {x: 650, y: 18}, // 23rd space
+            {x: 768, y: 45}, // 24th space
+            {x: 920, y: 40}, // 25th space
+            {x: 1080, y: 2}, // 26th space
         ];
       
         let currentPos = 0;
@@ -162,6 +259,8 @@
                 if (stepsRemaining <= 0) {
                     clearInterval(moveInterval);
                     isMoving = false;
+
+                    checkForX();
                     // After moving, check if landed on question block
                     checkForQuestion();
                     return;
@@ -190,10 +289,53 @@
         }
     
         function checkForQuestion() {
-            if (currentPos >= 1 && currentPos <= 10) {
+            if (currentPos == 1 || currentPos == 5 || currentPos == 6 || currentPos == 9 || currentPos == 12 || 
+                currentPos == 15 || currentPos == 19 || currentPos == 22 || currentPos == 24 || currentPos == 26) {
                 showQuestion(currentPos);
             }
         }
+        
+        function checkForX() {
+            if (currentPos == 3 || currentPos == 11 || currentPos == 16 || currentPos == 21 || currentPos == 25) {
+                triggerMoveBackwards();
+            }
+        }
+
+        function triggerMoveBackwards() {
+            const stepsBack = Math.floor(Math.random() * 3) + 1; 
+            let stepsRemaining = stepsBack;
+            
+            isMoving = true;
+
+            const moveInterval = setInterval(() => {
+                if (stepsRemaining <= 0) {
+                    clearInterval(moveInterval);
+                    isMoving = false;
+                    checkForQuestion();
+                    return;
+                }
+
+                currentPos--;
+                if (currentPos < 0) {
+                    currentPos = 0;
+                    clearInterval(moveInterval);
+                    isMoving = false;
+                    return;
+                }
+
+                const pos = path[currentPos];
+                currentHero.style.left = pos.x + "px";
+                currentHero.style.top = pos.y + "px";
+
+                currentHero.classList.add("pop-animation");
+                setTimeout(() => {
+                    currentHero.classList.remove("pop-animation");
+                }, 300);
+
+                stepsRemaining--;
+            }, 500);
+        }
+
         
         // Initialize the game
         window.onload = function() {
@@ -215,63 +357,63 @@
                     addChoice("C) Eating a plant-based diet", "C");
                     addChoice("D) Switching to LED light bulbs", "D");
                     break;
-                case 2:
+                case 5:
                     questionText.innerHTML = "In her environmental science class, Maya learns that fast fashion creates tons of waste and pollution. What is one smart way to reduce your impact when it comes to clothing?";
                     addChoice("A) Buy more clothes during sales", "A");
                     addChoice("B) Wash clothes in hot water every time", "B");
                     addChoice("C) Reuse, repair, or thrift clothing before buying new", "C");
                     addChoice("D) Avoid wearing the same outfit twice", "D");
                     break;
-                case 3:
+                case 6:
                     questionText.innerHTML = "Which of the following is considered the most sustainable protein source?";
                     addChoice("A) Beef", "A");
                     addChoice("B) Pork", "B");
                     addChoice("C) Crickets", "C");
                     addChoice("D) Chicken", "D");
                     break;
-                case 4:
+                case 9:
                     questionText.innerHTML = "Alex notices that his family's electricity bill is unusually high during the summer. After researching, he finds out their air conditioner runs almost all day and their windows are usually open. What is the most effective way to lower both energy use and cost?";
                     addChoice("A) Turn the A/C to maximum to cool the house faster", "A");
                     addChoice("B) Keep windows open for fresh air all day", "B");
                     addChoice("C) Close windows and curtains, and use a programmable thermostat", "C");
                     addChoice("D) Buy more fans for every room", "D");
                     break;
-                case 5:
+                case 12:
                     questionText.innerHTML = "Which organization created the concept of 'carbon footprint' as part of a marketing campaign?";
                     addChoice("A) Greenpeace", "A");
                     addChoice("B) BP (British Petroleum)", "B");
                     addChoice("C) United Nations", "C");
                     addChoice("D) World Wildlife Fund (WWF)", "D");
                     break;
-                case 6:
+                case 15:
                     questionText.innerHTML = "Which is the leading cause of tropical deforestation?";
                     addChoice("A) Illegal logging", "A");
                     addChoice("B) Cattle ranching", "B");
                     addChoice("C) Urban expansion", "C");
                     addChoice("D) Mining operations", "D");
                     break;
-                case 7:
+                case 19:
                     questionText.innerHTML = "Meera conducts a school project comparing households that use natural gas for heating to those using electric heat pumps powered by renewable energy. She finds that while the upfront cost of electric systems is higher, the long-term emissions are significantly lower. What's the most accurate environmental takeaway from her findings?";
                     addChoice("A) Natural gas is better because it's cheaper now", "A");
                     addChoice("B) Electric heat pumps only work in cold climates", "B");
                     addChoice("C) Short-term costs shouldn't outweigh long-term environmental impact", "C");
                     addChoice("D) Renewable energy is always free and available", "D");
                     break;
-                case 8:
+                case 22:
                     questionText.innerHTML = "What is 'greenwashing'?";
                     addChoice("A) Growing plants on rooftops", "A");
                     addChoice("B) Misleading consumers to think a product is environmentally friendly", "B");
                     addChoice("C) Cleaning polluted rivers and lakes", "C");
                     addChoice("D) Using green-colored packaging", "D");
                     break;
-                case 9:
+                case 24:
                     questionText.innerHTML = "Which of the following types of plastic can be most commonly recycled curbside in the U.S.?";
                     addChoice("A) #1 PET (Polyethylene Terephthalate)", "A");
                     addChoice("B) #3 PVC (Polyvinyl Chloride)", "B");
                     addChoice("C) #6 PS (Polystyrene)", "C");
                     addChoice("D) #7 Other", "D");
                     break;
-                case 10:
+                case 26:
                     questionText.innerHTML = "What is the estimated time it takes for fishing lines made from nylon to degrade in the ocean?";
                     addChoice("A) 10 years", "A");
                     addChoice("B) 40 years", "B");
@@ -313,30 +455,30 @@
                     correctAnswer = "C";
                     isCorrect = (choice === "C");
                     break;
-                case 2:
-                case 4:
-                case 7:
-                    correctAnswer = "C";
-                    isCorrect = (choice === "C");
-                    break;
-                case 3:
-                    correctAnswer = "C";
-                    isCorrect = (choice === "C");
-                    break;
                 case 5:
-                case 8:
-                    correctAnswer = "B";
-                    isCorrect = (choice === "B");
-                    break;
                 case 6:
+                case 9:
+                    correctAnswer = "C";
+                    isCorrect = (choice === "C");
+                    break;
+                case 12:
+                    correctAnswer = "C";
+                    isCorrect = (choice === "C");
+                    break;
+                case 15:
+                case 19:
                     correctAnswer = "B";
                     isCorrect = (choice === "B");
                     break;
-                case 9:
+                case 22:
+                    correctAnswer = "B";
+                    isCorrect = (choice === "B");
+                    break;
+                case 24:
                     correctAnswer = "A";
                     isCorrect = (choice === "A");
                     break;
-                case 10:
+                case 26:
                     correctAnswer = "C";
                     isCorrect = (choice === "C");
                     break;
@@ -346,14 +488,36 @@
             }
             
             if (isCorrect) {
-                resultMessage.innerText = "✅ Correct! " + getExplanation(currentPos);
+                resultMessage.innerText = "✅ Correct!\n" + getExplanation(currentPos);
                 resultMessage.style.color = "green";
+                points++;
+                updatePoints();
             } else {
-                resultMessage.innerText = `❌ Incorrect. Correct answer: ${correctAnswer}. ` + getExplanation(currentPos);
+                resultMessage.innerText = `❌ Incorrect. \nCorrect answer: ${correctAnswer}. ` + getExplanation(currentPos);
                 resultMessage.style.color = "red";
             }
+            if (!isCorrect) {
+                moveBackwardsOneStep();
+            }
+
         }
-    
+
+        function moveBackwardsOneStep() {
+        if (currentPos > 0) {
+        currentPos--;
+
+        const pos = path[currentPos];
+        currentHero.style.left = pos.x + "px";
+        currentHero.style.top = pos.y + "px";
+
+        // Pop animation
+        currentHero.classList.add("pop-animation");
+        setTimeout(() => {
+            currentHero.classList.remove("pop-animation");
+        }, 500);
+    }
+}
+
         function getExplanation(position) {
             switch(position) {
                 case 1:
@@ -380,6 +544,21 @@
                     return "Sustainable practices reduce environmental impact in the long term.";
             }
         }
+
+        function updatePoints() {
+    const pointsCounter = document.getElementById("pointsCounter");
+    pointsCounter.innerText = `Points: ${points}`;
+
+    // Add pop animation
+    pointsCounter.classList.add("pop-animation-points");
+
+    // Remove animation class after it plays so it can play again next time
+    setTimeout(() => {
+        pointsCounter.classList.remove("pop-animation-points");
+    }, 400); // Match the animation time
+}
+
+
     
         function closeQuestionDialog() {
             questionDialog.style.display = "none";
