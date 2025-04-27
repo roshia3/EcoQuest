@@ -1,4 +1,4 @@
-# EcoQuest 🌱: Path to a Green Future
+# EcoQuest 🌱: A Path to a Greener Future 🌎
 
 ### Problem & Opportunity
 🌎 **Problem:** Climate Change
